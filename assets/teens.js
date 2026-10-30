@@ -65,7 +65,11 @@
 
     // 默认中文，不跟随浏览器语言。测试场在国内，英文版是给个别访客的选项，
     // 不该因为系统是英文就默认展示英文协议——协议是必须读的一份文件。
+    // 默认中文。记住过就按记住的来——两个页面共用这个键，否则在说明页切了
+    // 语言，回到聊天又是中文。
+    var LANG_KEY = "tai.teens.lang";
     var lang = "zh";
+    try { lang = localStorage.getItem(LANG_KEY) || "zh"; } catch (e) {}
 
     // 主题是界面偏好，不是对话数据，所以允许记住。用了 localStorage 而对话用内存，
     // 界线在这里：主题不涉及任何用户内容，对话涉及。
@@ -373,6 +377,7 @@
             b.addEventListener("click", function () {
                 if (lang === b.dataset.lang) return;
                 lang = b.dataset.lang;
+                try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
                 applyLang();
             });
         });

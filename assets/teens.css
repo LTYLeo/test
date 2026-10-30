@@ -640,3 +640,23 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     /* 极窄屏：把品牌副标题藏掉，给两个切换器腾地方 */
     .brand small { display: none; }
 }
+
+/* 说明页入口。做成一个圆形的问号，和语言/主题那几个胶囊按钮区分开——
+   它是跳转，不是切换，长得太像会让点错。 */
+.help {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--card-border);
+    background: var(--input-bg);
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    display: grid;
+    place-items: center;
+    transition: 0.18s;
+}
+
+.help:hover, .help:active { color: var(--accent); border-color: var(--accent); }
