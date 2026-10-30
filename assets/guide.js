@@ -1,76 +1,12 @@
-<!DOCTYPE html>
-<html lang="zh-CN" data-theme="sunny">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#fdf8f0">
-<title>怎么玩 — TAI Teens Public Beta</title>
-<link rel="icon" href="assets/logo.png">
-<link rel="stylesheet" href="assets/teens.css">
-<style>
-    /* 说明页复用主页的变量和字体，只是把聊天布局换成文章布局 */
-    body { overflow-y: auto; display: block; }
-    .doc { max-width: 640px; margin: 0 auto; padding: 20px 18px calc(48px + var(--safe-bottom)); }
-    .doc h1 { font-size: 23px; margin: 8px 0 6px; letter-spacing: -0.3px; }
-    .doc .lede { color: var(--muted); font-size: 14px; margin: 0 0 26px; line-height: 1.7; }
-    .doc h2 { font-size: 16px; margin: 28px 0 10px; display: flex; align-items: center; gap: 8px; }
-    .doc h2 .n {
-        flex: 0 0 auto; width: 22px; height: 22px; border-radius: 7px;
-        background: var(--accent-soft); border: 1px solid var(--accent);
-        color: var(--accent); font-size: 12px; display: grid; place-items: center;
-    }
-    .doc p { font-size: 14px; line-height: 1.75; color: var(--text); opacity: 0.86; margin: 0 0 10px; }
-    .doc ul { margin: 0 0 12px; padding-left: 20px; }
-    .doc li { font-size: 14px; line-height: 1.75; margin-bottom: 6px; color: var(--text); opacity: 0.86; }
-    .doc strong { opacity: 1; }
-    .card {
-        background: var(--card); border: 1px solid var(--card-border);
-        border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px;
-        -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-    }
-    .card .who { display: flex; align-items: center; gap: 9px; margin-bottom: 5px; }
-    .card .who b { font-size: 15px; }
-    .card .who .tag {
-        font-size: 11px; padding: 2px 8px; border-radius: 999px;
-        background: var(--accent-soft); border: 1px solid var(--accent); color: var(--accent);
-    }
-    .card p { margin: 0; font-size: 13.5px; }
-    .warn {
-        border-left: 3px solid var(--accent); padding: 10px 14px; margin: 14px 0;
-        background: var(--accent-soft); border-radius: 0 10px 10px 0; font-size: 13.5px;
-        line-height: 1.7;
-    }
-    .back-line { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--border); }
-    .back-line a {
-        color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 600;
-        display: inline-flex; align-items: center; gap: 6px; min-height: 44px;
-    }
-    .doc table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 0 0 12px; }
-    .doc th, .doc td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
-    .doc th { color: var(--muted); font-weight: 600; font-size: 12.5px; }
-</style>
-</head>
-<body>
-
-<header class="bar">
-    <a class="brand" href="index.html" style="text-decoration:none;color:inherit">
-        <img src="assets/logo.png" alt="TAI Research">
-        <div>
-            <b>TAI Teens</b>
-            <small>怎么玩</small>
-        </div>
-    </a>
-    <div class="lang" role="group" aria-label="Language">
-        <button type="button" data-lang="zh" aria-pressed="true">中文</button>
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
-    </div>
-</header>
-
-<div class="doc" id="doc"></div>
-
-<script>
-// 两版正文。写成 JS 而不是两套 HTML，是因为要跟随语言切换即时重绘。
-var DOC = {
+/* 玩法说明的正文。
+ *
+ * 从 guide.html 搬过来的：说明内容不该是一个独立页面。点 ? 会离开对话、
+ * 丢掉输入框里的半句话，回来还得重新找位置。做成弹窗就只是盖一层，
+ * 关掉还在原地。
+ *
+ * 两版正文放在一个文件里而不是两套 HTML，因为要跟随语言切换即时重绘。
+ */
+window.TAI_GUIDE = {
 zh: `
 <h1>怎么玩</h1>
 <p class="lede">
@@ -218,31 +154,3 @@ case library. The agreement says so explicitly; text only.</p>
 </div>
 `
 };
-
-var lang = "zh";
-try { lang = localStorage.getItem("tai.teens.lang") || "zh"; } catch (e) {}
-var savedTheme = "sunny";
-try { savedTheme = localStorage.getItem("tai.teens.theme") || "sunny"; } catch (e) {}
-document.documentElement.setAttribute("data-theme", savedTheme);
-
-function render() {
-    document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
-    document.getElementById("doc").innerHTML = DOC[lang];
-    document.querySelectorAll(".lang button").forEach(function (b) {
-        b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
-    });
-    document.title = lang === "zh" ? "怎么玩 — TAI Teens" : "How to play — TAI Teens";
-}
-
-document.querySelectorAll(".lang button").forEach(function (b) {
-    b.addEventListener("click", function () {
-        lang = b.dataset.lang;
-        try { localStorage.setItem("tai.teens.lang", lang); } catch (e) {}
-        render();
-    });
-});
-
-render();
-</script>
-</body>
-</html>

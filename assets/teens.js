@@ -43,7 +43,10 @@
             "err.net": "网络不通，检查一下连接",
             "err.busy": "服务器忙，稍等一下再试",
             "err.agree": "协议提交失败，请重试",
-            "thinking": "对方正在输入"
+            "thinking": "对方正在输入",
+            "guide.title": "怎么玩",
+            "guide.sub": "TAI Teens: Public Beta & Red Teaming Program",
+            "guide.ok": "知道了"
         },
         en: {
             "brand.sub": "Public Beta · Red Teaming",
@@ -57,7 +60,10 @@
             "err.net": "Can't reach the server. Check your connection.",
             "err.busy": "The server is busy. Try again in a moment.",
             "err.agree": "Could not submit consent. Please retry.",
-            "thinking": "typing"
+            "thinking": "typing",
+            "guide.title": "How to play",
+            "guide.sub": "TAI Teens: Public Beta & Red Teaming Program",
+            "guide.ok": "Got it"
         }
     };
 
@@ -140,12 +146,31 @@
         });
 
         renderProtocol();
+        renderGuide();
         renderPersonas();
         if (persona) renderPlaceholder();
     }
 
     function renderProtocol() {
         $("protocol-body").innerHTML = PROTOCOL[lang] || PROTOCOL.zh;
+    }
+
+    function renderGuide() {
+        var g = window.TAI_GUIDE || {};
+        $("guide-body").innerHTML = g[lang] || g.zh || "";
+        $("guide-body").scrollTop = 0;
+    }
+
+    function openGuide() {
+        renderGuide();
+        $("guide").hidden = false;
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeGuide() {
+        $("guide").hidden = true;
+        // 协议弹窗还开着的话不能解锁滚动
+        if ($("protocol").hidden) document.body.style.overflow = "";
     }
 
     // ── 人设选择 ──────────────────────────────────────
@@ -380,6 +405,17 @@
                 try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
                 applyLang();
             });
+        });
+
+        $("help").addEventListener("click", openGuide);
+        $("guide-close").addEventListener("click", closeGuide);
+        $("guide-ok").addEventListener("click", closeGuide);
+        // 点遮罩关闭，和协议弹窗不同：协议必须同意才能关，说明不用
+        $("guide").addEventListener("click", function (e) {
+            if (e.target === $("guide")) closeGuide();
+        });
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && !$("guide").hidden) closeGuide();
         });
 
         $("agree-box").addEventListener("change", function (e) {

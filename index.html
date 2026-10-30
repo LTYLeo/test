@@ -29,7 +29,7 @@
             <button type="button" data-theme="sunny" aria-pressed="true" title="阳光主题">☀</button>
             <button type="button" data-theme="starry" aria-pressed="false" title="星空主题">☾</button>
         </div>
-        <a class="help" href="guide.html" title="怎么玩" aria-label="怎么玩">?</a>
+        <button type="button" class="help" id="help" title="怎么玩" aria-label="怎么玩">?</button>
         <div class="lang" role="group" aria-label="Language">
             <button type="button" data-lang="zh" aria-pressed="true">中文</button>
             <button type="button" data-lang="en" aria-pressed="false">EN</button>
@@ -78,8 +78,26 @@
     </div>
 </div>
 
+<!-- 玩法说明：浮层，不跳页 -->
+<div class="overlay" id="guide" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+        <header>
+            <div class="sheet-head">
+                <h2 id="guide-title" data-i18n="guide.title">怎么玩</h2>
+                <button type="button" class="close" id="guide-close" aria-label="关闭">✕</button>
+            </div>
+            <p data-i18n="guide.sub">TAI Teens: Public Beta &amp; Red Teaming Program</p>
+        </header>
+        <div class="body guide-body" id="guide-body"></div>
+        <footer>
+            <button class="go" id="guide-ok" type="button" data-i18n="guide.ok">知道了</button>
+        </footer>
+    </div>
+</div>
+
 <script src="assets/config.js"></script>
 <script src="assets/protocol.js"></script>
+<script src="assets/guide.js"></script>
 <script src="assets/teens.js"></script>
 </body>
 </html>
