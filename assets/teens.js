@@ -66,6 +66,15 @@
     // 默认中文，不跟随浏览器语言。测试场在国内，英文版是给个别访客的选项，
     // 不该因为系统是英文就默认展示英文协议——协议是必须读的一份文件。
     var lang = "zh";
+
+    // 主题是界面偏好，不是对话数据，所以允许记住。用了 localStorage 而对话用内存，
+    // 界线在这里：主题不涉及任何用户内容，对话涉及。
+    var THEME_KEY = "tai.teens.theme";
+    var theme = (function () {
+        try { return localStorage.getItem(THEME_KEY) || "sunny"; }
+        catch (e) { return "sunny"; }
+    })();
+
     var session = newSessionId();
     var persona = null;
     var history = [];      // [{role, content}]，只存在内存
@@ -85,6 +94,23 @@
 
     // ── 语言 ──────────────────────────────────────────
 
+    function applyTheme(next, persist) {
+        theme = next === "starry" ? "starry" : "sunny";
+        document.documentElement.setAttribute("data-theme", theme);
+
+        // 地址栏着色跟着主题走，否则手机上会有一条突兀的深色带
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute("content", theme === "sunny" ? "#fdf8f0" : "#0a0c12");
+
+        document.querySelectorAll(".theme button").forEach(function (b) {
+            b.setAttribute("aria-pressed", String(b.dataset.theme === theme));
+        });
+
+        if (persist) {
+            try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+        }
+    }
+
     function applyLang() {
         document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
         document.title = lang === "zh"
@@ -99,6 +125,12 @@
             var v = t(el.getAttribute("data-i18n-ph"));
             if (v) el.setAttribute("placeholder", v);
         });
+        document.querySelectorAll(".theme button").forEach(function (b) {
+            b.addEventListener("click", function () {
+                applyTheme(b.dataset.theme, true);
+            });
+        });
+
         document.querySelectorAll(".lang button").forEach(function (b) {
             b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
         });
@@ -332,6 +364,7 @@
     // ── 启动 ──────────────────────────────────────────
 
     function boot() {
+        applyTheme(theme, false);
         renderProtocol();
         renderPersonas();
         applyLang();

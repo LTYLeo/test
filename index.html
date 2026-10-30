@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="sunny">
 <head>
 <meta charset="UTF-8">
 <!-- viewport-fit=cover 是为了让 env(safe-area-inset-*) 生效，刘海屏必须 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a0c12">
+<meta name="theme-color" content="#fdf8f0">
 <meta name="description" content="TAI Teens Public Beta & Red Teaming Program —— 三个情感陪伴模型的公开测试">
 <title>TAI Teens — Public Beta</title>
 <link rel="icon" href="assets/logo.png">
@@ -24,9 +24,15 @@
             <small data-i18n="brand.sub">Public Beta · Red Teaming</small>
         </div>
     </div>
-    <div class="lang" role="group" aria-label="Language">
-        <button type="button" data-lang="zh" aria-pressed="true">中文</button>
-        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    <div class="tools">
+        <div class="theme" role="group" aria-label="Theme">
+            <button type="button" data-theme="sunny" aria-pressed="true" title="阳光主题">☀</button>
+            <button type="button" data-theme="starry" aria-pressed="false" title="星空主题">☾</button>
+        </div>
+        <div class="lang" role="group" aria-label="Language">
+            <button type="button" data-lang="zh" aria-pressed="true">中文</button>
+            <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
     </div>
 </header>
 

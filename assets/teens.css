@@ -9,20 +9,100 @@
  *   - 聊天区滚动要 overscroll-behavior: contain，否则滚到底会带动整个页面回弹。
  */
 
-:root {
+/* 两套主题。
+ *
+ * 默认阳光：暖白底、深字、橙色强调。星空是原来的深色版。
+ *
+ * 切换只换变量，不动任何规则——所有颜色都走 var()，所以加主题等于加一段变量。
+ * 主题记在 localStorage：这是界面偏好，不是对话数据，不违反"刷新即清空"的承诺。
+ */
+
+/* 阳光（默认） */
+:root,
+[data-theme="sunny"] {
+    --bg: #fdf8f0;
+    --bg-glow: #ffe9c9;
+    --card: rgba(255, 255, 255, 0.92);
+    --card-border: rgba(214, 196, 168, 0.7);
+    --text: #2b2118;
+    --muted: #8a7a68;
+    --accent: #f59e0b;
+    --accent-soft: rgba(245, 158, 11, 0.14);
+    --border: #ecdfc9;
+
+    --bar-bg: rgba(253, 248, 240, 0.9);
+    --bar-border: rgba(214, 196, 168, 0.55);
+
+    --bubble-me: linear-gradient(145deg, #fbbf24, #f59e0b);
+    --bubble-me-text: #3a2408;
+    --bubble-ai: #ffffff;
+    --bubble-ai-border: rgba(214, 196, 168, 0.85);
+    --bubble-ai-text: #2b2118;
+
+    --input-bg: #ffffff;
+    --input-border: rgba(214, 196, 168, 0.9);
+
+    --sheet-bg: #fffdf9;
+    --sheet-header: #fffdf9;
+
+    --btn-from: #fbbf24;
+    --btn-to: #f59e0b;
+    --btn-text: #3a2408;
+    --btn-shadow: rgba(245, 158, 11, 0.32);
+    --btn-disabled-border: #ddc9a8;
+    --btn-disabled-text: #b3a08a;
+    --danger: #c2410c;
+    --em: #b45309;
+
+    --overlay: rgba(60, 42, 20, 0.55);
+
+    --radius: 20px;
+    --radius-lg: 28px;
+
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* 星空 */
+[data-theme="starry"] {
     --bg: #0a0c12;
+    --bg-glow: #0c0f1c;
     --card: rgba(18, 22, 32, 0.75);
     --card-border: rgba(50, 60, 85, 0.5);
     --text: #eef2ff;
     --muted: #a0a8c0;
     --accent: #3b82f6;
-    --accent-glow: #6366f1;
+    --accent-soft: rgba(59, 130, 246, 0.2);
     --border: #1f2a3e;
-    --radius: 20px;
-    --radius-lg: 28px;
+
+    --bar-bg: rgba(8, 12, 22, 0.85);
+    --bar-border: rgba(59, 130, 246, 0.2);
 
     --bubble-me: linear-gradient(145deg, #1e3a8a, #1e293b);
+    --bubble-me-text: #eef2ff;
     --bubble-ai: rgba(30, 41, 59, 0.85);
+    --bubble-ai-border: rgba(80, 95, 130, 0.35);
+    --bubble-ai-text: #eef2ff;
+
+    --input-bg: rgba(15, 23, 42, 0.8);
+    --input-border: rgba(50, 60, 85, 0.5);
+
+    --sheet-bg: #0b0f18;
+    --sheet-header: #0b0f18;
+
+    --btn-from: #2563eb;
+    --btn-to: #1d4ed8;
+    --btn-text: #ffffff;
+    --btn-shadow: rgba(37, 99, 235, 0.32);
+    --btn-disabled-border: #334155;
+    --btn-disabled-text: #5a6b78;
+    --danger: #f87171;
+    --em: #f8b4b4;
+
+    --overlay: rgba(2, 4, 8, 0.88);
+
+    --radius: 20px;
+    --radius-lg: 28px;
 
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -44,7 +124,7 @@ html, body {
 body {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
                  "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    background: radial-gradient(ellipse at 20% 20%, #0c0f1c, #020408);
+    background: radial-gradient(ellipse at 20% 10%, var(--bg-glow), var(--bg) 60%);
     color: var(--text);
     line-height: 1.55;
     font-size: 16px;
@@ -63,8 +143,8 @@ body {
     justify-content: space-between;
     gap: 12px;
     padding: calc(10px + var(--safe-top)) 16px 10px;
-    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-    background: rgba(8, 12, 22, 0.85);
+    border-bottom: 1px solid var(--bar-border);
+    background: var(--bar-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     z-index: 10;
@@ -75,7 +155,7 @@ body {
 .brand img {
     width: 30px; height: 30px;
     border-radius: 9px;
-    box-shadow: 0 0 0 1px #3b82f6;
+    box-shadow: 0 0 0 1px var(--accent);
     flex: 0 0 auto;
 }
 
@@ -88,7 +168,7 @@ body {
     padding: 2px;
     border-radius: 999px;
     border: 1px solid var(--card-border);
-    background: rgba(15, 23, 42, 0.6);
+    background: var(--input-bg);
     flex: 0 0 auto;
 }
 
@@ -106,9 +186,9 @@ body {
 }
 
 .lang button[aria-pressed="true"] {
-    background: linear-gradient(145deg, #1e293b, #0f172a);
-    color: #fff;
-    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.5);
+    background: linear-gradient(145deg, var(--btn-from), var(--btn-to));
+    color: var(--btn-text);
+    box-shadow: 0 0 0 1px var(--accent);
 }
 
 /* ── 主区 ─────────────────────────────────────────── */
@@ -158,7 +238,7 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 }
 
 .persona:active { transform: scale(0.985); }
-.persona:hover { border-color: rgba(96, 165, 250, 0.55); box-shadow: 0 8px 24px rgba(59,130,246,.14); }
+.persona:hover { border-color: var(--accent); box-shadow: 0 8px 24px var(--accent-soft); }
 
 .persona .row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
 .persona .name { font-size: 16px; font-weight: 700; }
@@ -166,9 +246,9 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     font-size: 11px;
     padding: 2px 8px;
     border-radius: 999px;
-    background: rgba(59, 130, 246, 0.2);
-    border: 1px solid rgba(59, 130, 246, 0.5);
-    color: #60a5fa;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    color: var(--accent);
 }
 .persona .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
@@ -205,13 +285,15 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 .msg.me {
     align-self: flex-end;
     background: var(--bubble-me);
+    color: var(--bubble-me-text);
     border-bottom-right-radius: 6px;
 }
 
 .msg.ai {
     align-self: flex-start;
     background: var(--bubble-ai);
-    border: 1px solid rgba(80, 95, 130, 0.35);
+    color: var(--bubble-ai-text);
+    border: 1px solid var(--bubble-ai-border);
     border-bottom-left-radius: 6px;
 }
 
@@ -234,7 +316,7 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 
 .fail {
     align-self: center;
-    color: #f87171;
+    color: var(--danger);
     font-size: 13px;
     padding: 8px 14px;
     text-align: center;
@@ -249,7 +331,7 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     align-items: flex-end;
     padding: 8px 12px calc(8px + var(--safe-bottom));
     border-top: 1px solid var(--border);
-    background: rgba(8, 12, 22, 0.92);
+    background: var(--bar-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
@@ -257,9 +339,9 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 .composer textarea {
     flex: 1 1 auto;
     resize: none;
-    border: 1px solid var(--card-border);
+    border: 1px solid var(--input-border);
     border-radius: 20px;
-    background: rgba(15, 23, 42, 0.8);
+    background: var(--input-bg);
     color: var(--text);
     font: inherit;
     /* 必须 >= 16px：小于这个值 iOS 会在聚焦时放大页面 */
@@ -271,16 +353,16 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     outline: none;
 }
 
-.composer textarea:focus { border-color: rgba(96, 165, 250, 0.6); }
-.composer textarea::placeholder { color: #64748b; }
+.composer textarea:focus { border-color: var(--accent); }
+.composer textarea::placeholder { color: var(--muted); opacity: 0.8; }
 
 .composer button {
     flex: 0 0 auto;
     width: 44px; height: 44px;
     border-radius: 50%;
     border: 0;
-    background: linear-gradient(145deg, #2563eb, #1d4ed8);
-    color: #fff;
+    background: linear-gradient(145deg, var(--btn-from), var(--btn-to));
+    color: var(--btn-text);
     font-size: 18px;
     cursor: pointer;
     display: grid;
@@ -311,7 +393,7 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     position: fixed;
     inset: 0;
     z-index: 100;
-    background: rgba(2, 4, 8, 0.88);
+    background: var(--overlay);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     display: flex;
@@ -327,7 +409,7 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     width: 100%;
     max-width: 620px;
     max-height: 88dvh;
-    background: #0b0f18;
+    background: var(--sheet-bg);
     border: 1px solid var(--card-border);
     /* 四个角都圆。之前只圆上面两个，因为当时把它当成底部抽屉；
        现在留了边距，它就是一张浮起来的卡片，四角必须一致。 */
@@ -347,6 +429,7 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     flex: 0 0 auto;
     padding: 18px 20px 12px;
     border-bottom: 1px solid var(--border);
+    background: var(--sheet-header);
 }
 
 .sheet header h2 { margin: 0 0 4px; font-size: 17px; font-weight: 700; }
@@ -361,12 +444,13 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     padding: 16px 20px;
     font-size: 13.5px;
     line-height: 1.75;
-    color: #cbd5e6;
+    color: var(--text);
+    opacity: 0.86;
 }
 
 .sheet .body h3 {
     font-size: 14px;
-    color: #e2e8f0;
+    color: var(--text);
     margin: 18px 0 6px;
     font-weight: 700;
 }
@@ -375,15 +459,14 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 .sheet .body p { margin: 0 0 8px; }
 .sheet .body ul { margin: 0 0 10px; padding-left: 20px; }
 .sheet .body li { margin-bottom: 4px; }
-.sheet .body strong { color: #fff; }
-.sheet .body em { color: #f8b4b4; font-style: normal; }
+.sheet .body strong { color: var(--text); opacity: 1; }
+.sheet .body em { color: var(--em); font-style: normal; }
 
 .sheet footer {
     flex: 0 0 auto;
     padding: 14px 20px calc(18px + var(--safe-bottom));
     border-top: 1px solid var(--border);
-    /* 和 .sheet 同色。之前用了略深的 #0b0f18，和正文区域形成一条明显的横带，
-       看起来像两个拼在一起的块而不是同一张卡片。 */
+    /* 和 .sheet 同色，避免形成横带 */
     background: inherit;
 }
 
@@ -416,8 +499,8 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     flex: 0 0 auto;
     margin-top: 1px;
     border-radius: 6px;
-    border: 1.5px solid #46536e;
-    background: rgba(15, 23, 42, 0.7);
+    border: 1.5px solid var(--btn-disabled-border);
+    background: var(--input-bg);
     display: grid;
     place-items: center;
     transition: 0.15s;
@@ -427,8 +510,8 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     content: "";
     width: 11px;
     height: 6px;
-    border-left: 2px solid #fff;
-    border-bottom: 2px solid #fff;
+    border-left: 2px solid var(--btn-text);
+    border-bottom: 2px solid var(--btn-text);
     transform: rotate(-45deg) scale(0.6);
     opacity: 0;
     transition: 0.15s;
@@ -436,8 +519,8 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 }
 
 .agree input:checked + .box {
-    background: linear-gradient(145deg, #2563eb, #1d4ed8);
-    border-color: #3b82f6;
+    background: linear-gradient(145deg, var(--btn-from), var(--btn-to));
+    border-color: var(--accent);
 }
 
 .agree input:checked + .box::after {
@@ -446,7 +529,7 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 }
 
 .agree input:focus-visible + .box {
-    outline: 2px solid #60a5fa;
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
 }
 
@@ -461,11 +544,11 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     font-size: 15px;
     font-weight: 600;
     letter-spacing: 0.2px;
-    color: #fff;
-    background: linear-gradient(145deg, #2563eb, #1d4ed8);
+    color: var(--btn-text);
+    background: linear-gradient(145deg, var(--btn-from), var(--btn-to));
     cursor: pointer;
     transition: 0.18s;
-    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.32);
+    box-shadow: 0 6px 18px var(--btn-shadow);
 }
 
 /* 禁用态用描边而不是实心灰。实心灰块看起来像"按钮坏了"，描边一眼就能看出
@@ -480,7 +563,7 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 
 .sheet .go:not(:disabled):active {
     transform: scale(0.985);
-    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.28);
+    box-shadow: 0 3px 10px var(--btn-shadow);
 }
 
 /* ── 桌面 ─────────────────────────────────────────── */
@@ -510,4 +593,50 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+/* ── 主题切换 ───────────────────────────────────────
+ * 两个图标按钮并排，和语言切换同样的胶囊结构，但用图标而不是文字——
+ * 中文"阳光/星空"两个词在 320 宽的屏上会和语言按钮挤在一起。
+ */
+
+.tools { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+
+.theme {
+    display: inline-flex;
+    padding: 2px;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: var(--input-bg);
+}
+
+.theme button {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: 0.2s;
+}
+
+.theme button[aria-pressed="true"] {
+    background: linear-gradient(145deg, var(--btn-from), var(--btn-to));
+    box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* 选中态的背景在阳光主题下是橙黄，太阳图标本身也是黄色会糊在一起，
+   所以选中时把图标颜色换成按钮文字色。 */
+.theme button[aria-pressed="true"] { color: var(--btn-text); }
+
+@media (max-width: 359px) {
+    /* 极窄屏：把品牌副标题藏掉，给两个切换器腾地方 */
+    .brand small { display: none; }
 }
