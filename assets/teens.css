@@ -317,7 +317,8 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    padding: 0;
+    /* 四边都留白，卡片是浮起来的圆角矩形，不是贴着底边的抽屉 */
+    padding: 10px 10px calc(10px + var(--safe-bottom));
 }
 
 .overlay[hidden] { display: none; }
@@ -325,12 +326,15 @@ main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 .sheet {
     width: 100%;
     max-width: 620px;
-    max-height: 92dvh;
+    max-height: 88dvh;
     background: #0b0f18;
     border: 1px solid var(--card-border);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    /* 四个角都圆。之前只圆上面两个，因为当时把它当成底部抽屉；
+       现在留了边距，它就是一张浮起来的卡片，四角必须一致。 */
+    border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
+    overflow: hidden;      /* 子元素的背景不会顶出圆角 */
     animation: rise 0.25s ease-out;
 }
 
