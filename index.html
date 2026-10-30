@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<!-- viewport-fit=cover 是为了让 env(safe-area-inset-*) 生效，刘海屏必须 -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0c12">
+<meta name="description" content="TAI Teens Public Beta & Red Teaming Program —— 三个情感陪伴模型的公开测试">
+<title>TAI Teens — Public Beta</title>
+<link rel="icon" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<!-- iOS 加到主屏后全屏运行 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="assets/teens.css">
+</head>
+<body>
+
+<header class="bar">
+    <div class="brand">
+        <img src="assets/logo.png" alt="TAI Research">
+        <div>
+            <b>TAI Teens</b>
+            <small data-i18n="brand.sub">Public Beta · Red Teaming</small>
+        </div>
+    </div>
+    <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="zh" aria-pressed="true">中文</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+</header>
+
+<main>
+    <!-- 人设选择 -->
+    <section class="picker" id="picker">
+        <h1 data-i18n="picker.title">选一个人设开始测试</h1>
+        <p class="lede" data-i18n="picker.lede">
+            三个模型都能陪你聊天，但脾气不一样。随便挑一个，也可以随时换。
+            对话不会被保存到你下次访问 —— 刷新就没了。
+        </p>
+        <div id="persona-list"></div>
+    </section>
+
+    <!-- 聊天 -->
+    <div class="chat" id="chat" hidden></div>
+</main>
+
+<!-- 输入条 -->
+<footer class="composer" id="composer" hidden>
+    <button class="back" id="back" type="button" aria-label="换人设">←</button>
+    <textarea id="input" rows="1" placeholder="说点什么…" data-i18n-ph="composer.placeholder"></textarea>
+    <button id="send" type="button" aria-label="发送" disabled>↑</button>
+</footer>
+
+<!-- 协议弹窗：每次访问都要过 -->
+<div class="overlay" id="protocol" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="protocol-title">
+        <header>
+            <h2 id="protocol-title" data-i18n="protocol.title">测试人员协议</h2>
+            <p data-i18n="protocol.sub">TAI Teens: Public Beta &amp; Red Teaming Program</p>
+        </header>
+        <div class="body" id="protocol-body"></div>
+        <footer>
+            <label class="agree">
+                <input type="checkbox" id="agree-box">
+                <span class="box" aria-hidden="true"></span>
+                <span class="text" data-i18n="protocol.agree">我已阅读并同意以上全部条款，自愿参与本次测试</span>
+            </label>
+            <button class="go" id="agree-go" type="button" disabled data-i18n="protocol.go">同意并开始</button>
+        </footer>
+    </div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/protocol.js"></script>
+<script src="assets/teens.js"></script>
+</body>
+</html>

@@ -1,0 +1,509 @@
+/* TAI Teens Public Beta —— 移动端优先。
+ *
+ * 尺寸全部从手机开始写，再用 min-width 往上加。桌面是增强，不是基准。
+ *
+ * 几个必须处理、否则手机上会出问题的地方：
+ *   - 100vh 在 iOS Safari 上包含地址栏，键盘弹起时把输入框顶出屏幕。用 100dvh。
+ *   - 输入框字号小于 16px 时，iOS 会在聚焦时自动放大页面，而且不会缩回来。
+ *   - 刘海屏底部有 home indicator，输入框要避开 env(safe-area-inset-bottom)。
+ *   - 聊天区滚动要 overscroll-behavior: contain，否则滚到底会带动整个页面回弹。
+ */
+
+:root {
+    --bg: #0a0c12;
+    --card: rgba(18, 22, 32, 0.75);
+    --card-border: rgba(50, 60, 85, 0.5);
+    --text: #eef2ff;
+    --muted: #a0a8c0;
+    --accent: #3b82f6;
+    --accent-glow: #6366f1;
+    --border: #1f2a3e;
+    --radius: 20px;
+    --radius-lg: 28px;
+
+    --bubble-me: linear-gradient(145deg, #1e3a8a, #1e293b);
+    --bubble-ai: rgba(30, 41, 59, 0.85);
+
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* [hidden] 在 UA 样式里只是 display:none，作者写的 display:flex 会盖掉它——返回人设
+   选择页时底部输入条因此没有消失。这条必须带 !important，否则赢不了后面的类选择器。 */
+[hidden] { display: none !important; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overscroll-behavior: none;
+}
+
+body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: radial-gradient(ellipse at 20% 20%, #0c0f1c, #020408);
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+/* ── 顶栏 ─────────────────────────────────────────── */
+
+.bar {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: calc(10px + var(--safe-top)) 16px 10px;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+    background: rgba(8, 12, 22, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 10;
+}
+
+.brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+
+.brand img {
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    box-shadow: 0 0 0 1px #3b82f6;
+    flex: 0 0 auto;
+}
+
+.brand b { font-size: 15px; font-weight: 700; white-space: nowrap; }
+.brand small { display: block; font-size: 11px; color: var(--muted); line-height: 1.2; }
+
+/* 语言切换：和开发者平台同一个样式 */
+.lang {
+    display: inline-flex;
+    padding: 2px;
+    border-radius: 999px;
+    border: 1px solid var(--card-border);
+    background: rgba(15, 23, 42, 0.6);
+    flex: 0 0 auto;
+}
+
+.lang button {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 13px;
+    border-radius: 999px;
+    cursor: pointer;
+    min-height: 34px;
+    transition: 0.2s;
+}
+
+.lang button[aria-pressed="true"] {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    color: #fff;
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.5);
+}
+
+/* ── 主区 ─────────────────────────────────────────── */
+
+main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+
+/* 人设选择 */
+
+.picker {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 20px 16px calc(24px + var(--safe-bottom));
+}
+
+.picker h1 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    letter-spacing: -0.3px;
+}
+
+.picker p.lede {
+    color: var(--muted);
+    font-size: 13.5px;
+    margin: 0 0 20px;
+    line-height: 1.6;
+}
+
+.persona {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    min-height: 84px;
+}
+
+.persona:active { transform: scale(0.985); }
+.persona:hover { border-color: rgba(96, 165, 250, 0.55); box-shadow: 0 8px 24px rgba(59,130,246,.14); }
+
+.persona .row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.persona .name { font-size: 16px; font-weight: 700; }
+.persona .tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+    color: #60a5fa;
+}
+.persona .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+/* ── 聊天 ─────────────────────────────────────────── */
+
+.chat {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 14px 14px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.msg {
+    max-width: 82%;
+    padding: 9px 13px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+    word-break: break-word;
+    white-space: pre-wrap;
+    animation: pop 0.18s ease-out;
+}
+
+@keyframes pop {
+    from { opacity: 0; transform: translateY(6px) scale(0.98); }
+    to   { opacity: 1; transform: none; }
+}
+
+.msg.me {
+    align-self: flex-end;
+    background: var(--bubble-me);
+    border-bottom-right-radius: 6px;
+}
+
+.msg.ai {
+    align-self: flex-start;
+    background: var(--bubble-ai);
+    border: 1px solid rgba(80, 95, 130, 0.35);
+    border-bottom-left-radius: 6px;
+}
+
+/* 同一人设连发的几条，视觉上应该像一口气说完 */
+.msg.ai + .msg.ai { margin-top: -3px; }
+
+.typing { display: inline-flex; gap: 4px; align-items: center; padding: 3px 0; }
+.typing i {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--muted);
+    animation: blink 1.2s infinite;
+}
+.typing i:nth-child(2) { animation-delay: 0.2s; }
+.typing i:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+    0%, 60%, 100% { opacity: 0.25; }
+    30% { opacity: 1; }
+}
+
+.fail {
+    align-self: center;
+    color: #f87171;
+    font-size: 13px;
+    padding: 8px 14px;
+    text-align: center;
+}
+
+/* ── 输入条 ───────────────────────────────────────── */
+
+.composer {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    padding: 8px 12px calc(8px + var(--safe-bottom));
+    border-top: 1px solid var(--border);
+    background: rgba(8, 12, 22, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.composer textarea {
+    flex: 1 1 auto;
+    resize: none;
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    background: rgba(15, 23, 42, 0.8);
+    color: var(--text);
+    font: inherit;
+    /* 必须 >= 16px：小于这个值 iOS 会在聚焦时放大页面 */
+    font-size: 16px;
+    line-height: 1.45;
+    padding: 10px 14px;
+    max-height: 120px;
+    min-height: 44px;
+    outline: none;
+}
+
+.composer textarea:focus { border-color: rgba(96, 165, 250, 0.6); }
+.composer textarea::placeholder { color: #64748b; }
+
+.composer button {
+    flex: 0 0 auto;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 0;
+    background: linear-gradient(145deg, #2563eb, #1d4ed8);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: 0.15s;
+}
+
+.composer button:disabled { opacity: 0.35; cursor: default; }
+.composer button:not(:disabled):active { transform: scale(0.94); }
+
+.back {
+    flex: 0 0 auto;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--card-border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 17px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    margin-right: 4px;
+}
+
+/* ── 协议弹窗 ─────────────────────────────────────── */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(2, 4, 8, 0.88);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+}
+
+.overlay[hidden] { display: none; }
+
+.sheet {
+    width: 100%;
+    max-width: 620px;
+    max-height: 92dvh;
+    background: #0b0f18;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    display: flex;
+    flex-direction: column;
+    animation: rise 0.25s ease-out;
+}
+
+@keyframes rise {
+    from { transform: translateY(24px); opacity: 0.6; }
+    to   { transform: none; opacity: 1; }
+}
+
+.sheet header {
+    flex: 0 0 auto;
+    padding: 18px 20px 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.sheet header h2 { margin: 0 0 4px; font-size: 17px; font-weight: 700; }
+.sheet header p { margin: 0; font-size: 12px; color: var(--muted); }
+
+.sheet .body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 16px 20px;
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: #cbd5e6;
+}
+
+.sheet .body h3 {
+    font-size: 14px;
+    color: #e2e8f0;
+    margin: 18px 0 6px;
+    font-weight: 700;
+}
+
+.sheet .body h3:first-child { margin-top: 0; }
+.sheet .body p { margin: 0 0 8px; }
+.sheet .body ul { margin: 0 0 10px; padding-left: 20px; }
+.sheet .body li { margin-bottom: 4px; }
+.sheet .body strong { color: #fff; }
+.sheet .body em { color: #f8b4b4; font-style: normal; }
+
+.sheet footer {
+    flex: 0 0 auto;
+    padding: 14px 20px calc(18px + var(--safe-bottom));
+    border-top: 1px solid var(--border);
+    /* 和 .sheet 同色。之前用了略深的 #0b0f18，和正文区域形成一条明显的横带，
+       看起来像两个拼在一起的块而不是同一张卡片。 */
+    background: inherit;
+}
+
+.agree {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    margin-bottom: 14px;
+    cursor: pointer;
+    user-select: none;
+    line-height: 1.5;
+    /* 整行可点，不只是那个方块 */
+    padding: 4px 0;
+}
+
+/* 原生 checkbox 在深色底上会渲染成一个刺眼的白方块，accent-color 在部分
+   Android WebView 里也不生效。这里整个自绘：藏掉原生框，用伪元素画。 */
+.agree input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.agree .box {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 auto;
+    margin-top: 1px;
+    border-radius: 6px;
+    border: 1.5px solid #46536e;
+    background: rgba(15, 23, 42, 0.7);
+    display: grid;
+    place-items: center;
+    transition: 0.15s;
+}
+
+.agree .box::after {
+    content: "";
+    width: 11px;
+    height: 6px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg) scale(0.6);
+    opacity: 0;
+    transition: 0.15s;
+    margin-top: -3px;
+}
+
+.agree input:checked + .box {
+    background: linear-gradient(145deg, #2563eb, #1d4ed8);
+    border-color: #3b82f6;
+}
+
+.agree input:checked + .box::after {
+    opacity: 1;
+    transform: rotate(-45deg) scale(1);
+}
+
+.agree input:focus-visible + .box {
+    outline: 2px solid #60a5fa;
+    outline-offset: 2px;
+}
+
+.agree span.text { flex: 1 1 auto; }
+
+.sheet .go {
+    width: 100%;
+    min-height: 50px;
+    border: 0;
+    border-radius: 14px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: #fff;
+    background: linear-gradient(145deg, #2563eb, #1d4ed8);
+    cursor: pointer;
+    transition: 0.18s;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.32);
+}
+
+/* 禁用态用描边而不是实心灰。实心灰块看起来像"按钮坏了"，描边一眼就能看出
+   是"还没满足条件"。 */
+.sheet .go:disabled {
+    background: transparent;
+    border: 1px solid var(--card-border);
+    color: #5a6b78;
+    box-shadow: none;
+    cursor: default;
+}
+
+.sheet .go:not(:disabled):active {
+    transform: scale(0.985);
+    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.28);
+}
+
+/* ── 桌面 ─────────────────────────────────────────── */
+
+@media (min-width: 720px) {
+    body { font-size: 15px; }
+
+    .bar { padding: 14px 24px; }
+    .brand img { width: 34px; height: 34px; }
+    .brand b { font-size: 16px; }
+
+    .picker { padding: 32px 24px; max-width: 720px; width: 100%; margin: 0 auto; }
+    .picker h1 { font-size: 26px; }
+
+    .chat { padding: 20px 24px; max-width: 780px; width: 100%; margin: 0 auto; }
+    .msg { max-width: 68%; font-size: 15px; }
+
+    .composer { padding: 12px 24px; }
+    .composer textarea { min-height: 46px; }
+
+    .overlay { align-items: center; padding: 24px; }
+    .sheet { border-radius: var(--radius-lg); max-height: 86vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
